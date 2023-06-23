@@ -55,12 +55,15 @@ class BotInterface():
                         self.users = self.tools.search_users(self.info)
                         self.user = self.users.pop()
                         print(self.user)
-                        check_lists = base_new.base.select_profiles(conn, self.info['id'], self.user['id'])
-                        for check_list in check_lists:
-                            print( )
-
-                        while self.user['id'] == check_list[1]:
+                        # check_lists = base_new.base.select_profiles(conn, self.info['id'], self.user['id'])
+                        # for check_list in check_lists:
+                        #     print( )
+                        while base_new.base.select_profiles(conn, self.info['id'], self.user['id']):
                             self.user = self.users.pop()
+                            if len(self.users) == 0:
+                                break
+                        # while self.user['id'] == check_list[1]:
+                        #     self.user = self.users.pop()
                             print(self.user)
 
                         photos_user = self.tools.get_photos(self.user['id'])
