@@ -1,7 +1,7 @@
 from datetime import datetime
 import vk_api
-from config_new import acces_token
-
+from config_new2 import acces_token
+from vk_api.exceptions import ApiError
 
 class VkTools():
 
@@ -26,23 +26,20 @@ class VkTools():
                      'sex': info.get('sex'),
                      'city': info.get('city')['title'] if 'city' in info else None
                      }
-        # print(user_info)
+
         return user_info
 
-    def search_users(self, user_info):
+    def search_users(self, user_info, offset = 0):
 
         sex = 1 if user_info['sex'] == 2 else 2
         city = user_info.get('city')
         bdate_year = user_info.get('bdate').split('.')[2]
         now = datetime.now().strftime('%Y')
         age = int(now) - int(bdate_year)
-        # age_from = age - 5
-        # age_to = age + 5
-
 
         profiles = self.api.method('users.search',
                                 {'count': 50,
-                                 'offset': 0,
+                                 'offset': offset,
                                  'age_from': age - 5,
                                  'age_to': age + 5,
                                  'sex': sex,
@@ -57,7 +54,6 @@ class VkTools():
         except ApiError:
             profiles = []
             print('Ошибка получения user_search')
-
         result = []
         for profile in profiles:
             if profile['is_closed'] == False:
@@ -79,7 +75,6 @@ class VkTools():
         except KeyError:
             photos = {}
             print('Ошибка получения user_search')
-
         result = []
         for photo in photos:
             result.append({'owner_id': photo['owner_id'],
@@ -91,14 +86,5 @@ class VkTools():
         result.sort(key=lambda x: x['likes'] + x['comments'] * 10, reverse=True)
         return result[:3]
 
-
 if __name__ == '__main__':
     tools = VkTools(acces_token)
-    # user_info = tools.get_profile_info(305633358)
-    # print(user_info)
-    # users = tools.search_users(user_info)
-    #
-    # wh = users.pop()
-    # print(bot.get_photos(users[2]['id']))
-    # photos = tools.get_photos(wh['id'])
-    # print(photos)
